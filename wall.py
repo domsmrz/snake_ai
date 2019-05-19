@@ -1,4 +1,5 @@
 import numpy as np
+import utils
 
 
 class Wall(object):
@@ -14,8 +15,7 @@ class Wall(object):
         # credit: https://stackoverflow.com/questions/849211/shortest-distance-between-a-point-and-a-line-segment
         if self.squared_length == 0:
             return np.linalg.norm(self.endpoints[0] - point)
-        t = max(0, min(1, ((point - self.endpoints[0]) @ (self.endpoints[1] - self.endpoints[0])) / self.squared_length))
-        projection = self.endpoints[0] + t * (self.endpoints[1] - self.endpoints[0])
+        projection = utils.projection_line_segment(*self.endpoints, point, self.squared_length)
         return np.linalg.norm(point - projection)
 
     def detect_collision(self, point, width):
