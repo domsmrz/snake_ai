@@ -15,6 +15,7 @@ class Game(object):
     def __init__(self, walls=None):
         self.width = 2
         self.height = 2
+        self.score = 0
         self.snake = Snake(np.array([1, 1]))
         self.ended = False
         self.food = None
@@ -60,6 +61,7 @@ class Game(object):
         if self.food.detect_collision(self.snake.head_position, self.snake.width):
             self.gen_food()
             self.snake.food_eaten()
+            self.score += 1
             return self.FOOD_EATEN
 
         return self.NOTHING
