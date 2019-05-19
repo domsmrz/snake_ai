@@ -6,7 +6,7 @@ import itertools
 class Snake(object):
 
     add_per_food = 5
-    step = 0.01
+    step = 0.03
     width = 0.05
     ignore_collision = 10
 
