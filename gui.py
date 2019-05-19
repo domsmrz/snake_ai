@@ -30,6 +30,12 @@ def draw_scaled_circle(canvas, coor, radius, scaling_factor = None, *args, **kwa
     x, y, radius = x*scaling_factor, y*scaling_factor, radius*scaling_factor
     canvas.create_oval(x-radius, y-radius, x+radius, y+radius, *args, **kwargs)
 
+def get_score_message(score):
+    return "Score: {}".format(score)
+
+def close_window():
+  global running
+  running = False
 
 game = Game()
 
@@ -37,12 +43,28 @@ scaling = 100
 line_width = 5
 
 root = tk.Tk()
+root.protocol("WM_DELETE_WINDOW", close_window)
 root.title("AI-Snake")
+
 canvas = tk.Canvas(root, width=game.width * scaling, height=game.height * scaling, background="white")
 canvas.pack()
 
-while True:
-    result = game.tick(random.random() - 1/2)
+score_message = tk.StringVar()
+score_label = tk.Label(root, textvariable=score_message)
+score_label.pack()
+
+running = True
+
+result = None
+while result is not game.DIED and running:
+    canvas.delete("all")
+    result = game.tick(0)
+
+    if result == game.DIED:
+        score_message.set("GAME OVER, score: {}".format(game.score))
+    else:
+        # Score
+        score_message.set(get_score_message(game.score))
 
     # Food
     draw_scaled_circle(canvas, game.food.pos, game.food.width, fill="red")
@@ -60,5 +82,8 @@ while True:
     root.update()
 
     time.sleep(0.1)
-    canvas.delete("all")
 
+while running:
+
+    root.update()
+    time.sleep(0.1)
