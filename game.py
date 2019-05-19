@@ -31,8 +31,10 @@ class Game(object):
                 ((2, 0), (0, 0)),
             ]
             for a, b in endpoints:
-                self.walls.append(Wall(np.array(a), np.array(b), 0.05))
-
+                a, b = np.array(a, dtype=np.float), np.array(b, dtype=np.float)
+                a -= (a - 1) * self.food_width * 1.5
+                b -= (b - 1) * self.food_width * 1.5
+                self.walls.append(Wall(a, b, 0.05))
         self.gen_food()
 
     def check_all_collisions(self, point, width):
