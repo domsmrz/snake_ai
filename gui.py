@@ -18,9 +18,10 @@ def draw_scaled_line(canvas, endpoint1, endpoint2, line_width, scaling_factor = 
     canvas.create_line(x*s, y*s, m*s, n*s, width = line_width*s)
 
 def draw_wall(canvas, endpoint1, endpoint2, line_width, scaling_factor = None):
+    wall_color = "black"
     draw_scaled_line(canvas, endpoint1, endpoint2, line_width * 2, scaling_factor)
-    draw_scaled_circle(canvas, endpoint1, line_width, scaling_factor)
-    draw_scaled_circle(canvas, endpoint2, line_width, scaling_factor)
+    draw_scaled_circle(canvas, endpoint1, line_width, scaling_factor, fill=wall_color)
+    draw_scaled_circle(canvas, endpoint2, line_width, scaling_factor, fill=wall_color)
 
 def draw_scaled_circle(canvas, coor, radius, scaling_factor = None, *args, **kwargs):
     if scaling_factor is None:
