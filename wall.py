@@ -20,5 +20,4 @@ class Wall(object):
 
     def detect_collision(self, point, width):
         distance = self.compute_distance(point)
-        print("{} ?< {}".format(distance, self.width + width))
         return distance < self.width + width
