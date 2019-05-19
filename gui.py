@@ -38,6 +38,18 @@ def close_window():
   global running
   running = False
 
+
+angle = 0
+def arrowKey(event):
+    global angle
+    if event.type is tk.EventType.KeyRelease:
+        angle = 0
+    else:
+        if event.keysym == "Left" :
+            angle = -0.2
+        elif event.keysym == "Right":
+            angle = 0.2
+
 game = Game()
 
 scaling = 100
@@ -45,6 +57,11 @@ line_width = 5
 
 root = tk.Tk()
 root.protocol("WM_DELETE_WINDOW", close_window)
+root.bind('<Left>', arrowKey)
+root.bind('<KeyRelease-Left>', arrowKey)
+root.bind('<Right>', arrowKey)
+root.bind('<KeyRelease-Right>', arrowKey)
+
 root.title("AI-Snake")
 
 canvas = tk.Canvas(root, width=game.width * scaling, height=game.height * scaling, background="white")
@@ -59,7 +76,7 @@ running = True
 result = None
 while result is not game.DIED and running:
     canvas.delete("all")
-    result = game.tick(0)
+    result = game.tick(angle)
 
     if result == game.DIED:
         score_message.set("GAME OVER, score: {}".format(game.score))
