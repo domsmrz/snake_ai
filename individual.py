@@ -8,7 +8,7 @@ from neural_network import NeuralNetwork
 class Individual(object):
     SENSOR_MAPPING = ['food', 'wall', 'body']
     sensor_directions = [
-        -np.pi / 2,
+        # -np.pi / 2,
         -np.pi / 4,
         -np.pi / 8,
         -np.pi / 16,
@@ -16,23 +16,25 @@ class Individual(object):
         np.pi / 16,
         np.pi / 8,
         np.pi / 4,
-        np.pi / 2,
+        # np.pi / 2,
     ]
 
     def __init__(self):
         self.game = None
-        self.brain = [NeuralNetwork(len(self.sensor_directions) * 4, [5, 5]) for _ in range(2)]
+        self.brain = [NeuralNetwork(len(self.sensor_directions) * 4, [15, 10]) for _ in range(2)]
 
     def fitness(self):
-        f = list(map(self.single_fitness, range(5)))
+        f = list(map(self.single_fitness, range(3)))
         return sum(f) / len(f)
 
     def single_fitness(self, rubbish=None):
+        fitness = 0
+        last_food_distance = 999999
         self.game = Game()
 
-        max_ticks = 1000
+        max_ticks = 10000
         tick = 0
-        max_ticks_food = 100
+        max_ticks_food = 200
         tick_food = 0
         result = self.game.NOTHING
         while result != Game.DIED and tick < max_ticks and tick_food < max_ticks_food:
@@ -43,7 +45,17 @@ class Individual(object):
             if result == Game.FOOD_EATEN:
                 tick_food = 0
 
-        return 1000 * self.game.score + 600 - 200 * utils.distance(self.game.food.pos, self.game.snake.head_position)
+            distance_to_food = utils.distance(self.game.food.pos, self.game.snake.head_position)
+            if distance_to_food < last_food_distance:
+                fitness += 10
+            else:
+                fitness -= 5
+
+            fitness -= 1
+
+        fitness += 1000 * self.game.score
+        # return 1000 * self.game.score + 600 - 200 * utils.distance(self.game.food.pos, self.game.snake.head_position)
+        return fitness
 
     def crossover(self, other, probability):
         if np.random.rand() < probability:

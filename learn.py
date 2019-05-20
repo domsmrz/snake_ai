@@ -5,7 +5,8 @@ if __name__ == '__main__':
     import pickle
 
     ea = EvolutionaryAlgorithm()
-    starting_population = [Individual() for i in range(15)]
+    ea.MAX_GEN = 50
+    starting_population = [Individual() for i in range(11)]
     ea.run(starting_population)
 
     with open("nn.txt", 'wb') as f:

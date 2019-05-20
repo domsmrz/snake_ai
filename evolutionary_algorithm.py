@@ -5,11 +5,10 @@ from individual import Individual
 
 
 class EvolutionaryAlgorithm():
-    MAX_GEN = 20
+    MAX_GEN = 30
     TOURNAMENT_BETTER_WIN_PROB = 0.8
     CROSSOVER_PROB = 0.5
     MUTATION_PROB = 0.05
-    process_pool = multiprocessing.Pool(10)
 
     def run(self, starting_population):
         elites = self.gen_alg(starting_population, self.MAX_GEN, len(starting_population),
@@ -36,8 +35,9 @@ class EvolutionaryAlgorithm():
             print(igen)
 
             new_population = []
-            fitnesses = list(map(lambda x: x.fitness(), population))
-            #fitnesses = self.process_pool.map(EvolutionaryAlgorithm.fitness_caller, population)
+            #fitnesses = list(map(lambda x: x.fitness(), population))
+            process_pool = multiprocessing.Pool(4)
+            fitnesses = process_pool.map(EvolutionaryAlgorithm.fitness_caller, population)
             elite = population[np.argmax(fitnesses)]
             elites.append(elite)
 

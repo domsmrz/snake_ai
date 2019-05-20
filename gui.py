@@ -83,7 +83,9 @@ score_label.pack()
 running = True
 
 result = None
+tick = 0
 while result is not game.DIED and running:
+    tick += 1
     canvas.delete("all")
     individual_angle = individual.get_output(individual.get_input())
     result = game.tick(individual_angle)
@@ -96,7 +98,7 @@ while result is not game.DIED and running:
     if result == game.DIED:
         score_message.set("GAME OVER, score: {}".format(game.score))
     else:
-        score_message.set(get_score_message(game.score))
+        score_message.set(get_score_message(game.score) + ", tick: " + str(tick))
 
     # Food
     draw_scaled_circle(canvas, game.food.pos, game.food.width, fill="red")
