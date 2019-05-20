@@ -2,6 +2,7 @@ import time
 import tkinter as tk
 
 from game import *
+from individual import Individual
 
 
 def draw_scaled_line(canvas, endpoint1, endpoint2, line_width, scaling_factor=None):
@@ -54,6 +55,8 @@ def arrowKey(event):
 
 
 game = Game()
+individual = Individual()
+individual.game = game
 
 scaling = 100
 line_width = 5
@@ -80,6 +83,8 @@ result = None
 while result is not game.DIED and running:
     canvas.delete("all")
     result = game.tick(angle)
+
+    individual.get_input(canvas, scaling)
 
     # Score
     if result == game.DIED:

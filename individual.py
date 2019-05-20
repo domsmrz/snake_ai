@@ -21,12 +21,11 @@ class Individual(object):
         if np.random.rand() < probability:
             return
 
-
     def mutate(self, probability):
         if np.random.rand() < probability:
             return
 
-    def get_input(self):
+    def get_input(self, canvas=None, scale=None):
         sensor_directions = [
             -np.pi / 2,
             0,
@@ -76,6 +75,13 @@ class Individual(object):
             object_type = np.zeros(len(self.SENSOR_MAPPING))
             object_type[self.SENSOR_MAPPING.index(seen_object[1])] = 1
             results.append(object_type)
+
+            if canvas is not None:
+                x, y = self.game.snake.head_position
+                x, y = x * scale, y * scale
+                m = x + direction[0] * seen_object[0] * scale
+                n = y + direction[1] * seen_object[0] * scale
+                canvas.create_line(x, y, m, n, width=1, fill="red")
 
         return np.concatenate(results)
 
