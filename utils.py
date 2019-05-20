@@ -20,3 +20,16 @@ def projection_line_segment(a, b, p, squared_length=None):
     if t > 1:
         t = 1
     return a + t * (b - a)
+
+
+def distance(a, b):
+    return np.linalg.norm(a - b)
+
+
+def get_rotation_matrix(theta):
+    s = np.sin(theta)
+    c = np.cos(theta)
+    return np.array([
+        [c, -s],
+        [s, c],
+    ])
