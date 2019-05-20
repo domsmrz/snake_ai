@@ -2,36 +2,64 @@ import numpy as np
 import utils
 import itertools
 from game import Game
+from neural_network import NeuralNetwork
 
 
 class Individual(object):
     SENSOR_MAPPING = ['food', 'wall', 'body']
+    sensor_directions = [
+        -np.pi / 2,
+        -np.pi / 4,
+        -np.pi / 8,
+        -np.pi / 16,
+        0,
+        np.pi / 16,
+        np.pi / 8,
+        np.pi / 4,
+        np.pi / 2,
+    ]
 
     def __init__(self):
         self.game = None
+        self.brain = [NeuralNetwork(len(self.sensor_directions) * 4, [5, 5]) for _ in range(2)]
 
     def fitness(self):
-        self.game = Game()
-        direction = 0
+        f = list(map(self.single_fitness, range(5)))
+        return sum(f) / len(f)
 
-        while self.game.tick(direction) != Game.DIED:
+    def single_fitness(self, rubbish=None):
+        self.game = Game()
+
+        max_ticks = 1000
+        tick = 0
+        max_ticks_food = 100
+        tick_food = 0
+        result = self.game.NOTHING
+        while result != Game.DIED and tick < max_ticks and tick_food < max_ticks_food:
             direction = self.get_output(self.get_input())
+            result = self.game.tick(direction)
+            tick += 1
+            tick_food += 1
+            if result == Game.FOOD_EATEN:
+                tick_food = 0
+
+        return 1000 * self.game.score + 600 - 200 * utils.distance(self.game.food.pos, self.game.snake.head_position)
 
     def crossover(self, other, probability):
         if np.random.rand() < probability:
             return
+        self.brain, other.brain = [self.brain[0], other.brain[1]], [other.brain[0], other.brain[1]]
 
     def mutate(self, probability):
-        if np.random.rand() < probability:
-            return
+        for network in self.brain:
+            for layer in network.weights:
+                to_change = np.random.rand(*layer.shape) < probability
+                std = np.std(layer)
+                add = np.random.normal(scale=std, size=layer.shape)
+                layer += add * to_change
 
     def get_input(self, canvas=None, scale=None):
-        sensor_directions = [
-            -np.pi / 2,
-            0,
-            np.pi / 2,
-        ]
-        rotation_matrices = [utils.get_rotation_matrix(d) for d in sensor_directions]
+        rotation_matrices = [utils.get_rotation_matrix(d) for d in self.sensor_directions]
 
         results = []
         for rotation_matrix in rotation_matrices:
@@ -96,4 +124,5 @@ class Individual(object):
         return None
 
     def get_output(self, inputs):
-        raise NotImplementedError
+        network = self.brain[np.random.random() < 0.5]
+        return network.evaluate(inputs)

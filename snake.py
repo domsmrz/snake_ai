@@ -6,10 +6,11 @@ import itertools
 
 class Snake(object):
 
-    add_per_food = 5
-    step = 0.03
+    add_per_food = 2
+    step = 0.05
     width = 0.05
-    ignore_collision = 10
+    ignore_collision = 4
+    max_turn = 0.6
 
     def __init__(self, pos=None):
         self.direction = np.array([0, self.step])
@@ -23,6 +24,10 @@ class Snake(object):
         return self.body[0]
 
     def tick(self, angle=0):
+        if angle < -self.max_turn:
+            angle = -self.max_turn
+        if angle > self.max_turn:
+            angle = self.max_turn
         rotation_matrix = utils.get_rotation_matrix(angle)
         self.direction = rotation_matrix @ self.direction
 

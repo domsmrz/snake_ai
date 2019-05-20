@@ -1,5 +1,6 @@
 import time
 import tkinter as tk
+import pickle
 
 from game import *
 from individual import Individual
@@ -49,13 +50,15 @@ def arrowKey(event):
         angle = 0
     else:
         if event.keysym == "Left":
-            angle = -0.2
+            angle = -1
         elif event.keysym == "Right":
-            angle = 0.2
+            angle = 1
 
 
 game = Game()
-individual = Individual()
+#individual = Individual()
+with open("nn.txt", "rb") as f:
+    individual = pickle.load(f)
 individual.game = game
 
 scaling = 100
@@ -82,7 +85,10 @@ running = True
 result = None
 while result is not game.DIED and running:
     canvas.delete("all")
-    result = game.tick(angle)
+    individual_angle = individual.get_output(individual.get_input())
+    result = game.tick(individual_angle)
+    print(individual_angle)
+    #result = game.tick(angle)
 
     individual.get_input(canvas, scaling)
 
