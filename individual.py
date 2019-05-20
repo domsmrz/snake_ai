@@ -25,9 +25,9 @@ class Individual(object):
 
     def get_input(self):
         sensor_directions = [
-#            -np.pi / 2,
+            -np.pi / 2,
             0,
-#            np.pi / 2,
+            np.pi / 2,
         ]
         rotation_matrices = [utils.get_rotation_matrix(d) for d in sensor_directions]
 
@@ -69,7 +69,6 @@ class Individual(object):
             if not seen_objects:
                 raise ValueError("Snake has seen beyond the edge of the world")
             seen_object = min(seen_objects)
-            print(seen_object)
             results.append(np.array([seen_object[0]]))
             object_type = np.zeros(len(self.SENSOR_MAPPING))
             object_type[self.SENSOR_MAPPING.index(seen_object[1])] = 1
