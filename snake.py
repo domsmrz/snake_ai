@@ -1,4 +1,5 @@
 from collections import deque
+import utils
 import numpy as np
 import itertools
 
@@ -22,8 +23,7 @@ class Snake(object):
         return self.body[0]
 
     def tick(self, angle=0):
-        c, s = np.cos(angle), np.sin(angle)
-        rotation_matrix = np.array([[c, -s], [s, c]])
+        rotation_matrix = utils.get_rotation_matrix(angle)
         self.direction = rotation_matrix @ self.direction
 
         # Normalize to fix exploding direction vector over time
