@@ -12,7 +12,11 @@ class Individual(object):
         -np.pi / 4,
         -np.pi / 8,
         -np.pi / 16,
+        -np.pi / 32,
+        -np.pi / 64,
         0,
+        np.pi / 64,
+        np.pi / 32,
         np.pi / 16,
         np.pi / 8,
         np.pi / 4,
@@ -21,10 +25,10 @@ class Individual(object):
 
     def __init__(self):
         self.game = None
-        self.brain = [NeuralNetwork(len(self.sensor_directions) * 4, [15, 10]) for _ in range(2)]
+        self.brain = [NeuralNetwork(len(self.sensor_directions) * 3, [64, 32]) for _ in range(2)]
 
     def fitness(self):
-        f = list(map(self.single_fitness, range(3)))
+        f = list(map(self.single_fitness, range(5)))
         return sum(f) / len(f)
 
     def single_fitness(self, rubbish=None):
@@ -32,9 +36,9 @@ class Individual(object):
         last_food_distance = 999999
         self.game = Game()
 
-        max_ticks = 10000
+        max_ticks = 5000
         tick = 0
-        max_ticks_food = 200
+        max_ticks_food = 300
         tick_food = 0
         result = self.game.NOTHING
         while result != Game.DIED and tick < max_ticks and tick_food < max_ticks_food:
@@ -49,7 +53,7 @@ class Individual(object):
             if distance_to_food < last_food_distance:
                 fitness += 10
             else:
-                fitness -= 5
+                fitness -= 50
 
             fitness -= 1
 
@@ -111,9 +115,9 @@ class Individual(object):
             if not seen_objects:
                 raise ValueError("Snake has seen beyond the edge of the world")
             seen_object = min(seen_objects)
-            results.append(np.array([seen_object[0]]))
-            object_type = np.zeros(len(self.SENSOR_MAPPING))
-            object_type[self.SENSOR_MAPPING.index(seen_object[1])] = 1
+            #results.append(np.array([seen_object[0]]))
+            object_type = np.zeros(len(self.SENSOR_MAPPING)) + 2.5
+            object_type[self.SENSOR_MAPPING.index(seen_object[1])] = seen_object[0]
             results.append(object_type)
 
             if canvas is not None:
