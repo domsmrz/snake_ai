@@ -1,4 +1,5 @@
 import numpy as np
+import copy
 import multiprocessing
 
 from individual import Individual
@@ -43,16 +44,16 @@ class EvolutionaryAlgorithm():
 
             # Tournament selection
             for i in range(pop_size - 1):
-                new_population.append(self.tour_sel(population, fitnesses, prob_better_win))
+                new_population.append(copy.deepcopy(self.tour_sel(population, fitnesses, prob_better_win)))
 
             # Mutation
-            map(lambda x: x.mutate(prob_mutation), new_population)
+            list(map(lambda x: x.mutate(prob_mutation), new_population))
 
             # Crossover
             for i in range(0, pop_size - 1, 2):
                 new_population[i].crossover(new_population[i + 1], prob_cross)
 
-            new_population.append(elite)  # The best individual is preserved
+            new_population.append(copy.deepcopy(elite))  # The best individual is preserved
             print(np.max(fitnesses))
             population = new_population
         return elites

@@ -7,9 +7,10 @@ from collections import deque
 
 
 class Individual(object):
-    SENSOR_MAPPING = ['food', 'wall', 'body']
+    SENSOR_MAPPING = ['food', 'wall']
     sensor_directions = [
-        # -np.pi / 2,
+        -np.pi * 3 / 4,
+        -np.pi / 2,
         -np.pi / 4,
         -np.pi / 8,
         -np.pi / 16,
@@ -18,22 +19,25 @@ class Individual(object):
         np.pi / 16,
         np.pi / 8,
         np.pi / 4,
+        np.pi / 2,
+        np.pi * 3 / 4,
     ]
     memory_size = 1
 
     def __init__(self):
         self.game = None
-        self.brain = [NeuralNetwork(len(self.sensor_directions) * 3 * self.memory_size, [64, 32]) for _ in range(1)]
+        self.brain = [NeuralNetwork(len(self.sensor_directions) * len(self.SENSOR_MAPPING) * self.memory_size, [64, 32]) for _ in range(1)]
         self.inputs = None
 
     def fitness(self):
-        f = list(map(self.single_fitness, range(3)))
-        return sum(f) / len(f)
+        f = list(map(self.single_fitness, range(5)))
+        f.sort()
+        return f[1]
 
-    def single_fitness(self, rubbish=None):
+    def single_fitness(self, game_seed=None):
         fitness = 0
         last_food_distance = 999999
-        self.game = Game()
+        self.game = Game(seed=game_seed)
         self.inputs = deque(maxlen=self.memory_size)
 
         max_ticks = 5000

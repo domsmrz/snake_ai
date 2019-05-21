@@ -12,13 +12,14 @@ class Game(object):
 
     food_width = 0.05
 
-    def __init__(self, walls=None):
+    def __init__(self, walls=None, seed=None):
         self.width = 2
         self.height = 2
         self.score = 0
         self.snake = Snake(np.array([1, 1]))
         self.ended = False
         self.food = None
+        self.random_state = np.random.RandomState(seed)
 
         if walls is not None:
             self.walls = walls
@@ -46,9 +47,9 @@ class Game(object):
 
     def gen_food(self):
         board_size = np.array([self.height, self.width])
-        position_candidate = np.random.random(2) * board_size
+        position_candidate = self.random_state.rand(2) * board_size
         while self.check_all_collisions(position_candidate, self.food_width):
-            position_candidate = np.random.random(2) * board_size
+            position_candidate = self.random_state.rand(2) * board_size
         self.food = Food(position_candidate, self.food_width)
 
     def tick(self, angle):
