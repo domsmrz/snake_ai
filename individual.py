@@ -3,6 +3,7 @@ import utils
 import itertools
 from game import Game
 from neural_network import NeuralNetwork
+from collections import deque
 
 
 class Individual(object):
@@ -12,29 +13,28 @@ class Individual(object):
         -np.pi / 4,
         -np.pi / 8,
         -np.pi / 16,
-        -np.pi / 32,
         -np.pi / 64,
-        0,
         np.pi / 64,
-        np.pi / 32,
         np.pi / 16,
         np.pi / 8,
         np.pi / 4,
-        # np.pi / 2,
     ]
+    memory_size = 1
 
     def __init__(self):
         self.game = None
-        self.brain = [NeuralNetwork(len(self.sensor_directions) * 3, [64, 32]) for _ in range(2)]
+        self.brain = [NeuralNetwork(len(self.sensor_directions) * 3 * self.memory_size, [64, 32]) for _ in range(1)]
+        self.inputs = None
 
     def fitness(self):
-        f = list(map(self.single_fitness, range(5)))
+        f = list(map(self.single_fitness, range(3)))
         return sum(f) / len(f)
 
     def single_fitness(self, rubbish=None):
         fitness = 0
         last_food_distance = 999999
         self.game = Game()
+        self.inputs = deque(maxlen=self.memory_size)
 
         max_ticks = 5000
         tick = 0
@@ -64,7 +64,11 @@ class Individual(object):
     def crossover(self, other, probability):
         if np.random.rand() < probability:
             return
-        self.brain, other.brain = [self.brain[0], other.brain[1]], [other.brain[0], other.brain[1]]
+        crossover_point = np.random.randint(1, len(self.brain[0].weights))
+        self.brain[0].weights, other.brain[0].weights = \
+            self.brain[0].weights[:crossover_point] + other.brain[0].weights[crossover_point:], \
+            other.brain[0].weights[:crossover_point] + self.brain[0].weights[crossover_point:]
+        #self.brain, other.brain = [self.brain[0], other.brain[1]], [other.brain[0], other.brain[1]]
 
     def mutate(self, probability):
         for network in self.brain:
@@ -91,7 +95,7 @@ class Individual(object):
             for body_point in itertools.islice(self.game.snake.body, self.game.snake.ignore_collision, None):
                 image = self.detect_point(ray_vector, body_point, self.game.snake.width)
                 if image is not None:
-                    seen_objects.append((image, 'body'))
+                    seen_objects.append((image, 'wall')) #### TODO: HACK HACK HACK change back to body
 
             for wall in self.game.walls:
                 for point in wall.endpoints:
@@ -127,7 +131,13 @@ class Individual(object):
                 n = y + direction[1] * seen_object[0] * scale
                 canvas.create_line(x, y, m, n, width=1, fill="red")
 
-        return np.concatenate(results)
+        current_input = np.concatenate(results)
+        self.inputs.append(current_input)
+
+        result = self.inputs
+        if len(result) < self.memory_size:
+            return np.array(self.memory_size * list(result[-1]))
+        return np.concatenate(result)
 
     @staticmethod
     def detect_point(direction_vector, point, width):
@@ -140,5 +150,6 @@ class Individual(object):
         return None
 
     def get_output(self, inputs):
-        network = self.brain[np.random.random() < 0.5]
+        #network = self.brain[np.random.random() < 0.5]
+        network = self.brain[0]
         return network.evaluate(inputs)

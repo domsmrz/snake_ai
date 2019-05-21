@@ -1,9 +1,12 @@
+import glob
+import os
 import time
 import tkinter as tk
 import pickle
 
 from game import *
 from individual import Individual
+from collections import deque
 
 
 def draw_scaled_line(canvas, endpoint1, endpoint2, line_width, scaling_factor=None):
@@ -57,9 +60,13 @@ def arrowKey(event):
 
 game = Game()
 #individual = Individual()
-with open("nn.txt", "rb") as f:
+list_of_files = glob.glob('logs/*') # * means all if need specific format then *.csv
+latest_file = max(list_of_files, key=os.path.getctime)
+
+with open(latest_file, "rb") as f:
     individual = pickle.load(f)
 individual.game = game
+individual.inputs = deque(maxlen=individual.memory_size)
 
 scaling = 100
 line_width = 5
