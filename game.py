@@ -30,6 +30,8 @@ class Game(object):
                 ((0, 2), (2, 2)),
                 ((2, 2), (2, 0)),
                 ((2, 0), (0, 0)),
+                # ((0,0), (0.75, 0.75)), ##
+                # ((1.25, 1.25), (2,2))  ##
             ]
             for a, b in endpoints:
                 a, b = np.array(a, dtype=np.float), np.array(b, dtype=np.float)

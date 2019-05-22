@@ -12,10 +12,13 @@ class EvolutionaryAlgorithm():
     MUTATION_PROB = 0.05
 
     def run(self, starting_population):
-        elites = self.gen_alg(starting_population, self.MAX_GEN, len(starting_population),
-                              self.TOURNAMENT_BETTER_WIN_PROB,
-                              self.CROSSOVER_PROB, self.MUTATION_PROB)
+        elites, last_population, saved_fitnesses = self.gen_alg(starting_population, self.MAX_GEN,
+                                                                len(starting_population),
+                                                                self.TOURNAMENT_BETTER_WIN_PROB,
+                                                                self.CROSSOVER_PROB, self.MUTATION_PROB)
         self.last_run_elites = elites
+        self.last_population = last_population
+        self.saved_fitnesses = saved_fitnesses
 
     def tour_sel(self, population, fitnesses, prob_better_win):
         selected_idx = list(np.random.choice(len(fitnesses), 2, replace=False))
@@ -31,12 +34,13 @@ class EvolutionaryAlgorithm():
                 prob_mutation=0.05):
         elites = []
         population = starting_population
+        saved_fitnesses = []
 
         for igen in range(max_gen):
             print(igen)
 
             new_population = []
-            #fitnesses = list(map(lambda x: x.fitness(), population))
+            # fitnesses = list(map(lambda x: x.fitness(), population))
             process_pool = multiprocessing.Pool(4)
             fitnesses = process_pool.map(EvolutionaryAlgorithm.fitness_caller, population)
             elite = population[np.argmax(fitnesses)]
@@ -56,8 +60,8 @@ class EvolutionaryAlgorithm():
             new_population.append(copy.deepcopy(elite))  # The best individual is preserved
             print(np.max(fitnesses))
             population = new_population
-        return elites
-
+            saved_fitnesses.append(fitnesses)
+        return (elites, population, saved_fitnesses)
 
 # ea = EvolutionaryAlgorithm()
 # ea.run([Individual() for i in range(15)])

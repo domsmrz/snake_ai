@@ -7,10 +7,8 @@ from collections import deque
 
 
 class Individual(object):
-    SENSOR_MAPPING = ['food', 'wall']
+    SENSOR_MAPPING = ['food', 'wall', 'body']
     sensor_directions = [
-        -np.pi * 3 / 4,
-        -np.pi / 2,
         -np.pi / 4,
         -np.pi / 8,
         -np.pi / 16,
@@ -19,8 +17,7 @@ class Individual(object):
         np.pi / 16,
         np.pi / 8,
         np.pi / 4,
-        np.pi / 2,
-        np.pi * 3 / 4,
+
     ]
     memory_size = 1
 
@@ -57,7 +54,7 @@ class Individual(object):
             if distance_to_food < last_food_distance:
                 fitness += 10
             else:
-                fitness -= 50
+                fitness -= 20
 
             fitness -= 1
 
@@ -99,7 +96,7 @@ class Individual(object):
             for body_point in itertools.islice(self.game.snake.body, self.game.snake.ignore_collision, None):
                 image = self.detect_point(ray_vector, body_point, self.game.snake.width)
                 if image is not None:
-                    seen_objects.append((image, 'wall')) #### TODO: HACK HACK HACK change back to body
+                    seen_objects.append((image, 'body')) #### TODO: HACK HACK HACK change back to body
 
             for wall in self.game.walls:
                 for point in wall.endpoints:

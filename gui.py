@@ -60,7 +60,7 @@ def arrowKey(event):
 
 game = Game()
 #individual = Individual()
-list_of_files = glob.glob('logs/*') # * means all if need specific format then *.csv
+list_of_files = glob.glob('logs/*.txt') # * means all if need specific format then *.csv
 latest_file = max(list_of_files, key=os.path.getctime)
 
 with open(latest_file, "rb") as f:
