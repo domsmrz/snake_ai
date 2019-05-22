@@ -8,6 +8,11 @@ from game import *
 from individual import Individual
 from collections import deque
 
+import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument("--display", action="store_true")
+parser.add_argument("--scaling", type=int, default=100)
+args = parser.parse_args()
 
 def draw_scaled_line(canvas, endpoint1, endpoint2, line_width, scaling_factor=None):
     if scaling_factor is None:
@@ -60,9 +65,15 @@ def arrowKey(event):
 
 game = Game()
 #individual = Individual()
+
+# if argparse.alg == "neat":
 NEAT = True
+# else:
+#     NEAT = False
+
 d = 'logs/neat' if NEAT else 'logs'
 list_of_files = glob.glob('{}/*.txt'.format(d)) # * means all if need specific format then *.csv
+#list_of_files = glob.glob('{}/2019-05-22 23-45-35.705664-nn.txt'.format(d))
 latest_file = max(list_of_files, key=os.path.getctime)
 
 with open(latest_file, "rb") as f:
@@ -75,7 +86,7 @@ else:
 individual.game = game
 individual.inputs = deque(maxlen=individual.memory_size)
 
-scaling = 100
+scaling = args.scaling
 line_width = 5
 
 root = tk.Tk()
@@ -103,11 +114,13 @@ while result is not game.DIED and running:
     canvas.delete("all")
     individual_angle = individual.get_output(individual.get_input())
     result = game.tick(individual_angle)
-    print(individual_angle)
+    # print(individual_angle)
     #result = game.tick(angle)
 
-    individual.get_input(canvas, scaling)
-
+    if args.display:
+        individual.get_input(canvas, scaling)
+    else:
+        individual.get_input()
     # Score
     if result == game.DIED:
         score_message.set("GAME OVER, score: {}".format(game.score))
@@ -129,7 +142,7 @@ while result is not game.DIED and running:
     root.update_idletasks()
     root.update()
 
-    time.sleep(0.1)
+    time.sleep(0.05)
 
 while running:
     root.update()

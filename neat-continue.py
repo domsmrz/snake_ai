@@ -4,6 +4,7 @@ import pickle
 
 import neat
 
+import visualize
 from individual import Individual
 
 
@@ -23,17 +24,16 @@ def run(config_file):
                          neat.DefaultSpeciesSet, neat.DefaultStagnation,
                          config_file)
 
-    # Create the population, which is the top-level object for a NEAT run.
-    p = neat.Population(config)
+    p = neat.Checkpointer.restore_checkpoint('neat-checkpoint-16')
 
     # Add a stdout reporter to show progress in the terminal.
     p.add_reporter(neat.StdOutReporter(True))
     stats = neat.StatisticsReporter()
     p.add_reporter(stats)
-    p.add_reporter(neat.Checkpointer(5))
+    p.add_reporter(neat.Checkpointer(1))
 
     # Run for up to 30 generations.
-    winner = p.run(eval_genomes, 30)
+    winner = p.run(eval_genomes, 1) ####
 
     # Display the winning genome.
     print('\nBest genome:\n{!s}'.format(winner))
@@ -42,14 +42,15 @@ def run(config_file):
     print('\nOutput:')
     winner_net = neat.nn.FeedForwardNetwork.create(winner, config)
 
+    visualize.draw_net(config, winner, True)
+    visualize.plot_stats(stats, ylog=False, view=True)
+    visualize.plot_species(stats, view=True)
 
     # output = winner_net.activate(sensors)
     with open("logs/neat/{}.txt".format(str(datetime.datetime.now()).replace(":", "-") + "-nn"), 'wb') as f:
         pickle.dump(winner_net, f)
 
 
-    # p = neat.Checkpointer.restore_checkpoint('neat-checkpoint-4')
-    # p.run(eval_genomes, 10)
 
 
 if __name__ == '__main__':

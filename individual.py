@@ -38,9 +38,9 @@ class Individual(object):
         self.game = Game(seed=game_seed)
         self.inputs = deque(maxlen=self.memory_size)
 
-        max_ticks = 5000
+        max_ticks = 3000
         tick = 0
-        max_ticks_food = 300
+        max_ticks_food = 150
         tick_food = 0
         result = self.game.NOTHING
         while result != Game.DIED and tick < max_ticks and tick_food < max_ticks_food:
@@ -94,7 +94,7 @@ class Individual(object):
             if image is not None:
                 seen_objects.append((image, 'food'))
 
-            for body_point in itertools.islice(self.game.snake.body, self.game.snake.ignore_collision, None):
+            for body_point in itertools.islice(self.game.snake.body, 1, None):
                 image = self.detect_point(ray_vector, body_point, self.game.snake.width)
                 if image is not None:
                     seen_objects.append((image, 'body')) #### TODO: HACK HACK HACK change back to body
