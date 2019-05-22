@@ -25,6 +25,7 @@ class Individual(object):
         self.game = None
         self.brain = [NeuralNetwork(len(self.sensor_directions) * len(self.SENSOR_MAPPING) * self.memory_size, [64, 32]) for _ in range(1)]
         self.inputs = None
+        self.neat_network = None
 
     def fitness(self):
         f = list(map(self.single_fitness, range(5)))
@@ -151,6 +152,7 @@ class Individual(object):
         return None
 
     def get_output(self, inputs):
+        return self.neat_network.activate(inputs)[0]
         #network = self.brain[np.random.random() < 0.5]
-        network = self.brain[0]
-        return network.evaluate(inputs)
+        #network = self.brain[0]
+        #return network.evaluate(inputs)

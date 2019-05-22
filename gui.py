@@ -60,11 +60,18 @@ def arrowKey(event):
 
 game = Game()
 #individual = Individual()
-list_of_files = glob.glob('logs/*.txt') # * means all if need specific format then *.csv
+NEAT = True
+d = 'logs/neat' if NEAT else 'logs'
+list_of_files = glob.glob('{}/*.txt'.format(d)) # * means all if need specific format then *.csv
 latest_file = max(list_of_files, key=os.path.getctime)
 
 with open(latest_file, "rb") as f:
-    individual = pickle.load(f)
+    data = pickle.load(f)
+if NEAT:
+    individual = Individual()
+    individual.neat_network = data
+else:
+    individual = data
 individual.game = game
 individual.inputs = deque(maxlen=individual.memory_size)
 
